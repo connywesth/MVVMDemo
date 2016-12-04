@@ -1,11 +1,22 @@
 ﻿using MVVMDemo.Model;
+
 using System.Collections.ObjectModel;
+using System.Windows.Input;
+using System;
 
 namespace MVVMDemo.ViewModel
 {
 
 	public class StudentViewModel
 	{
+
+		public MyICommand DeleteCommand { get; set; }
+
+		public StudentViewModel()
+		{
+			LoadStudents();
+			DeleteCommand = new MyICommand(OnDelete, CanDelete);
+		}
 
 		public ObservableCollection<Student> Students
 		{
@@ -22,6 +33,32 @@ namespace MVVMDemo.ViewModel
 			students.Add(new Student { FirstName = "Linda", LastName = "Hamerski" });
 
 			Students = students;
+		}
+
+		private Student _selectedStudent;
+
+		public Student SelectedStudent
+		{
+			get
+			{
+				return _selectedStudent;
+			}
+
+			set
+			{
+				_selectedStudent = value;
+				DeleteCommand.RaiseCanExecuteChanged();
+			}
+		}
+
+		private void OnDelete()
+		{
+			Students.Remove(SelectedStudent);
+		}
+
+		private bool CanDelete()
+		{
+			return SelectedStudent != null;
 		}
 	}
 }
